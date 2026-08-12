@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Ruta — Equipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0b0d;
+  --bg-panel:#15171b;
+  --bg-panel-2:#1c1f24;
+  --border:#2a2d33;
+  --border-soft:#22252b;
+  --gold:#d8b166;
+  --gold-bright:#f0cd8a;
+  --gold-dim:#8a7444;
+  --text:#f3f1ea;
+  --text-muted:#9aa0aa;
+  --text-faint:#5b6068;
+  --green:#5fd48c;
+  --red:#f2857a;
+  --radius:14px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:radial-gradient(ellipse 1200px 800px at 20% -10%, #1a1510 0%, var(--bg) 55%), var(--bg);
+  color:var(--text);
+  font-family:'Montserrat',sans-serif;
+  font-weight:500;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+#root{max-width:960px;margin:0 auto;padding:28px 20px 80px;}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold-dim);font-weight:700;margin:0 0 6px;
+}
+h1{font-size:26px;font-weight:800;margin:0 0 4px;letter-spacing:-.01em;}
+h2{font-size:18px;font-weight:800;margin:0 0 2px;letter-spacing:-.01em;}
+.sub{color:var(--text-muted);font-size:13.5px;font-weight:500;margin:0;line-height:1.5;}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:26px;flex-wrap:wrap;}
+.btn{
+  font-family:inherit;font-weight:700;font-size:13.5px;border-radius:10px;
+  border:1px solid var(--border);background:var(--bg-panel-2);color:var(--text);
+  padding:11px 18px;cursor:pointer;transition:.15s;letter-spacing:.01em;
+}
+.btn:hover{border-color:var(--gold-dim);}
+.btn-gold{
+  background:linear-gradient(180deg,var(--gold-bright),var(--gold));
+  color:#231a0c;border:none;box-shadow:0 4px 18px -4px rgba(216,177,102,.45);
+}
+.btn-gold:hover{filter:brightness(1.06);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-muted);}
+.btn-ghost:hover{color:var(--text);}
+.btn-sm{padding:7px 12px;font-size:12px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+.card{
+  background:var(--bg-panel);border:1px solid var(--border-soft);
+  border-radius:var(--radius);padding:22px;
+}
+.grid{display:grid;gap:14px;}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:640px){.grid-4{grid-template-columns:repeat(2,1fr);}.grid-2{grid-template-columns:1fr;}}
+
+.stat{
+  background:var(--bg-panel);border:1px solid var(--border-soft);border-radius:var(--radius);
+  padding:16px 18px;
+}
+.stat-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);font-weight:700;margin-bottom:8px;}
+.stat-value{font-size:26px;font-weight:900;letter-spacing:-.02em;}
+.stat-value.gold{color:var(--gold-bright);}
+.stat-value.green{color:var(--green);}
+.stat-sub{font-size:12px;color:var(--text-muted);margin-top:3px;font-weight:500;}
+
+/* Landing */
+.landing-hero{text-align:center;padding:36px 10px 10px;}
+.landing-hero h1{font-size:32px;}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px;}
+@media(max-width:600px){.role-grid{grid-template-columns:1fr;}}
+.role-card{
+  background:var(--bg-panel);border:1px solid var(--border-soft);border-radius:var(--radius);
+  padding:26px 22px;text-align:left;cursor:pointer;transition:.15s;
+}
+.role-card:hover{border-color:var(--gold-dim);transform:translateY(-2px);}
+.role-card .icon{font-size:26px;margin-bottom:10px;display:block;}
+.role-card h3{margin:0 0 6px;font-size:16px;font-weight:800;}
+.role-card p{margin:0;font-size:13px;color:var(--text-muted);line-height:1.5;}
+
+/* Route visual */
+.ruta{display:flex;align-items:center;justify-content:space-between;padding:14px 4px;position:relative;}
+.ruta::before{
+  content:'';position:absolute;left:20px;right:20px;top:50%;transform:translateY(-1px);
+  height:2px;background:var(--border);z-index:0;
+}
+.node{
+  width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;position:relative;z-index:1;flex-shrink:0;
+  background:var(--bg-panel-2);border:2px solid var(--border);color:var(--text-faint);
+}
+.node.done{background:linear-gradient(180deg,var(--gold-bright),var(--gold));border-color:var(--gold);color:#231a0c;}
+.node.current{border-color:var(--gold);color:var(--gold-bright);box-shadow:0 0 0 4px rgba(216,177,102,.15);}
+@media(max-width:640px){.node{width:22px;height:22px;font-size:10px;}}
+
+.route-bar-wrap{margin-top:6px;}
+.route-bar{height:14px;border-radius:20px;background:var(--bg-panel-2);border:1px solid var(--border);overflow:hidden;position:relative;}
+.route-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold-bright));border-radius:20px;transition:width .4s;}
+.route-bar-flag{position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:10px;}
+
+/* Form */
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-size:12px;font-weight:700;color:var(--text-muted);}
+.field input[type=number],.field input[type=date],.field input[type=text],.field input[type=password],.field textarea{
+  font-family:inherit;background:var(--bg-panel-2);border:1px solid var(--border);color:var(--text);
+  border-radius:9px;padding:10px 12px;font-size:14px;font-weight:600;width:100%;
+}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--gold-dim);}
+.field textarea{font-weight:500;resize:vertical;min-height:60px;}
+.toggle-row{display:flex;gap:10px;}
+.toggle{
+  flex:1;padding:10px;border-radius:9px;border:1px solid var(--border);background:var(--bg-panel-2);
+  text-align:center;cursor:pointer;font-size:13px;font-weight:700;color:var(--text-muted);transition:.15s;
+}
+.toggle.active{background:rgba(216,177,102,.14);border-color:var(--gold-dim);color:var(--gold-bright);}
+
+.tabs{display:flex;gap:6px;margin-bottom:20px;border-bottom:1px solid var(--border-soft);}
+.tab{padding:10px 4px;margin-right:18px;font-size:13.5px;font-weight:700;color:var(--text-faint);cursor:pointer;border-bottom:2px solid transparent;}
+.tab.active{color:var(--gold-bright);border-bottom-color:var(--gold);}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;color:var(--text-faint);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:8px 10px;border-bottom:1px solid var(--border-soft);}
+td{padding:10px 10px;border-bottom:1px solid var(--border-soft);font-weight:600;}
+tr:last-child td{border-bottom:none;}
+.rank{color:var(--gold-bright);font-weight:800;}
+.pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.pill.on{background:rgba(95,212,140,.15);color:var(--green);}
+.pill.off{background:rgba(255,255,255,.04);color:var(--text-faint);}
+
+.msg-banner{
+  border-radius:11px;padding:13px 16px;font-size:13.5px;font-weight:700;margin-bottom:18px;
+  border:1px solid var(--border-soft);
+}
+.msg-banner.top{background:rgba(216,177,102,.12);color:var(--gold-bright);border-color:var(--gold-dim);}
+.msg-banner.good{background:rgba(95,212,140,.1);color:var(--green);border-color:rgba(95,212,140,.3);}
+.msg-banner.mid{background:rgba(240,205,138,.08);color:#e0c07a;border-color:rgba(224,192,122,.3);}
+.msg-banner.low{background:rgba(242,133,122,.1);color:var(--red);border-color:rgba(242,133,122,.3);}
+
+.bars{display:flex;align-items:flex-end;gap:8px;height:110px;padding-top:10px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;}
+.bar{width:100%;max-width:34px;background:linear-gradient(180deg,var(--gold-bright),var(--gold-dim));border-radius:5px 5px 0 0;min-height:3px;}
+.bar-lbl{font-size:9.5px;color:var(--text-faint);font-weight:700;text-align:center;}
+
+.back-link{color:var(--text-muted);font-size:12.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-bottom:14px;}
+.back-link:hover{color:var(--gold-bright);}
+.footer-note{margin-top:34px;text-align:center;color:var(--text-faint);font-size:11.5px;font-weight:500;line-height:1.6;}
+.section-gap{margin-top:26px;}
+.name-badge{
+  display:inline-flex;align-items:center;gap:8px;background:var(--bg-panel-2);border:1px solid var(--border);
+  padding:6px 12px 6px 6px;border-radius:30px;font-size:12.5px;font-weight:700;color:var(--text-muted);
+}
+.name-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);}
+.saved-toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--gold-bright);color:#231a0c;padding:10px 20px;border-radius:30px;font-weight:800;
+  font-size:13px;box-shadow:0 8px 24px -6px rgba(0,0,0,.5);opacity:0;transition:.25s;pointer-events:none;z-index:50;
+}
+.saved-toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+select{font-family:inherit;background:var(--bg-panel-2);border:1px solid var(--border);color:var(--text);border-radius:9px;padding:10px 12px;font-size:14px;font-weight:600;width:100%;}
+
+.chip-block{margin-bottom:18px;}
+.chip-block-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.chip-block-sub{font-size:11.5px;color:var(--text-faint);margin-bottom:10px;}
+.chip-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{
+  padding:9px 13px;border-radius:20px;border:1px solid var(--border);background:var(--bg-panel-2);
+  font-size:12px;font-weight:700;color:var(--text-muted);cursor:pointer;transition:.15s;user-select:none;
+}
+.chip:hover{border-color:var(--gold-dim);}
+.chip.active{background:rgba(216,177,102,.14);border-color:var(--gold-dim);color:var(--gold-bright);}
+.chip .ico{margin-right:5px;}
+.id-line{display:flex;gap:14px;flex-wrap:wrap;color:var(--text-faint);font-size:11.5px;font-weight:600;margin-top:4px;}
+.lock-icon{font-size:28px;margin-bottom:8px;display:block;text-align:center;}
+.label-row{display:flex;align-items:center;gap:6px;}
+.info-badge{
+  width:16px;height:16px;border-radius:50%;background:var(--bg-panel-2);border:1px solid var(--gold-dim);
+  color:var(--gold-bright);font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;
+  cursor:help;flex-shrink:0;font-style:normal;
+}
+.redes-log-row{display:flex;flex-direction:column;gap:4px;padding:11px 0;border-bottom:1px solid var(--border-soft);}
+.redes-log-row:last-child{border-bottom:none;}
+.redes-log-date{font-size:12px;font-weight:800;color:var(--text-muted);}
+.redes-log-pills{display:flex;flex-wrap:wrap;gap:5px;}
+.mini-pill{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.mini-pill.feed{background:rgba(216,177,102,.14);color:var(--gold-bright);}
+.mini-pill.hist{background:rgba(95,212,140,.12);color:var(--green);}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="saved-toast" id="toast">Guardado</div>
+
+<script>
+const root = document.getElementById('root');
+const toastEl = document.getElementById('toast');
+let state = { view:'landing', socioName:null, socioProfile:null, socios:[], config:{metaMensual:12}, loading:false };
+
+const DIAS_MES = 30.4;
+
+const FEED_ITEMS = [
+  {key:'educativo', label:'Educativo', hint:'Paso a paso de tu modelo de negocio — ideal 7–9am, es lo que más atrae prospectos nuevos.'},
+  {key:'habladoCompleto', label:'Hablado completo', hint:'Sin plataforma de fondo, temas que te hicieron entrar al negocio.'},
+  {key:'chistosoTrend', label:'Trend / audio viral', hint:'Rompe la rutina de venta, muestra otra faceta tuya.'},
+  {key:'videoFrase', label:'Video + frase', hint:'Mentalidad y estilo de vida — lo aspiracional de tu día a día.'},
+  {key:'mentalidad', label:'Contenido de valor', hint:'Educa y resuelve objeciones — mínimo 3 por semana.'}
+];
+const HISTORIAS_ITEMS = [
+  {key:'chistosa', label:'Chistosa'},
+  {key:'valor', label:'Aportando valor'},
+  {key:'estiloVida', label:'Estilo de vida'},
+  {key:'testimonios', label:'Testimonios'},
+  {key:'preguntas', label:'Cajita de preguntas'},
+  {key:'fotoBuenDia', label:'Foto de buen día'},
+  {key:'cuentaHistoria', label:'Cuenta tu historia'}
+];
+const REDES_KEYS = [...FEED_ITEMS.map(i=>i.key), ...HISTORIAS_ITEMS.map(i=>'hist_'+i.key)];
+function slugify(s){return s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');}
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function monthKey(d){return d.slice(0,7);}
+function fmtPct(x){return Math.round((x||0)*100)+'%';}
+function getMonday(dateStr){
+  const d = new Date(dateStr+'T00:00:00');
+  const day = d.getDay();
+  const diff = (day===0?-6:1-day);
+  d.setDate(d.getDate()+diff);
+  return d.toISOString().slice(0,10);
+}
+function showToast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  setTimeout(()=>toastEl.classList.remove('show'), 1600);
+}
+
+async function storeGet(key, shared){
+  try{
+    const r = await window.storage.get(key, !!shared);
+    return r ? JSON.parse(r.value) : null;
+  }catch(e){ return null; }
+}
+async function storeSet(key, value, shared){
+  try{ await window.storage.set(key, JSON.stringify(value), !!shared); }catch(e){ console.error('storage error', e); }
+}
+
+async function loadConfig(){
+  const c = await storeGet('config', true);
+  state.config = c || {metaMensual:12, dmsObjetivo:25, dmsCalifObjetivo:7, llamadasObjetivoSemana:12, showUpObjetivo:0.8, cierreObjetivo:0.28, socioPassword:'mined2026', adminPassword:'admin2026'};
+  if(!state.config.socioPassword) state.config.socioPassword='mined2026';
+  if(!state.config.adminPassword) state.config.adminPassword='admin2026';
+}
+async function loadSocios(){
+  const s = await storeGet('socios', true);
+  state.socios = s || [];
+}
+async function getEntries(id){
+  const e = await storeGet('entries_'+id, true);
+  return e || [];
+}
+async function upsertProfile(profile){
+  await loadSocios();
+  const idx = state.socios.findIndex(s=>s.id===profile.id);
+  if(idx>=0) state.socios[idx] = {...state.socios[idx], ...profile};
+  else state.socios.push(profile);
+  await storeSet('socios', state.socios, true);
+}
+async function saveEntry(profileId, entry){
+  const entries = await getEntries(profileId);
+  const idx = entries.findIndex(e=>e.date===entry.date);
+  if(idx>=0) entries[idx]=entry; else entries.push(entry);
+  entries.sort((a,b)=>a.date<b.date?-1:1);
+  await storeSet('entries_'+profileId, entries, true);
+}
+
+function sum(arr, key){ return arr.reduce((a,e)=>a+(Number(e[key])||0),0); }
+function monthEntries(entries, mk){ return entries.filter(e=>monthKey(e.date)===mk); }
+function sumRedes(entries, mk){
+  const me = monthEntries(entries, mk);
+  let total=0;
+  me.forEach(e=>{ if(e.redes){ REDES_KEYS.forEach(k=>{ if(e.redes[k]) total++; }); } });
+  return total;
+}
+
+function computeStats(entries, meta){
+  const mk = monthKey(todayStr());
+  const me = monthEntries(entries, mk);
+  const ventas = sum(me,'ventas');
+  const dms = sum(me,'dms');
+  const dmsCalif = sum(me,'dmsCalif');
+  const llamadasAg = sum(me,'llamadasAg');
+  const llamadasReal = sum(me,'llamadasReal');
+  const cumplimiento = meta>0 ? ventas/meta : 0;
+  const tasaCierre = llamadasReal>0 ? ventas/llamadasReal : 0;
+  const showUp = llamadasAg>0 ? llamadasReal/llamadasAg : 0;
+  const redesCount = sumRedes(entries, mk);
+  return {ventas, dms, dmsCalif, llamadasAg, llamadasReal, cumplimiento, tasaCierre, showUp, meta, redesCount};
+}
+
+function redesLogHTML(entries){
+  const withRedes = entries.filter(e=>e.redes && Object.values(e.redes).some(Boolean)).slice(-10).reverse();
+  if(!withRedes.length) return '<p class="sub">Aún no has marcado contenido de redes sociales.</p>';
+  return withRedes.map(e=>{
+    const feedPills = FEED_ITEMS.filter(it=>e.redes[it.key]).map(it=>`<span class="mini-pill feed">${it.label}</span>`).join('');
+    const histPills = HISTORIAS_ITEMS.filter(it=>e.redes['hist_'+it.key]).map(it=>`<span class="mini-pill hist">${it.label}</span>`).join('');
+    return `<div class="redes-log-row"><div class="redes-log-date">${e.date}</div><div class="redes-log-pills">${feedPills}${histPills}</div></div>`;
+  }).join('');
+}
+
+function seededPick(seed, arr){
+  let h=0;
+  for(let i=0;i<seed.length;i++){ h = (h*31 + seed.charCodeAt(i)) >>> 0; }
+  return arr[h % arr.length];
+}
+
+const FRASES = {
+  top: [
+    '🏆 ¡Meta del mes cumplida! Es momento de subir la meta.',
+    '🏆 Cerraste tu meta. Un líder que sube su meta demuestra que quiere crecer más que ayer.',
+    '🏆 Lo lograste. Ahora enseña el camino a tu equipo — la duplicación empieza cuando otros ven que sí se puede.',
+    '🏆 Meta cumplida. En redes de mercadeo, el que sube el estándar arrastra a todo su equipo con él.'
+  ],
+  good: [
+    '💪 Vamos muy bien este mes, mantén el ritmo de prospección.',
+    '💪 La consistencia vende más que el talento. Un día más de ritmo constante y llegas.',
+    '💪 Vas sobre el 70%. Los líderes se forjan en la constancia diaria, no en los golpes de suerte.',
+    '💪 Buen avance. Recuerda: no vendes un producto, vendes una decisión — sigue conectando de verdad.'
+  ],
+  mid: [
+    '⚠️ Vas a mitad de camino. Revisa tu funnel semanal y acelera.',
+    '⚠️ Estás en la mitad. El network marketing premia a quien no se detiene cuando el ritmo baja.',
+    '⚠️ A mitad de ruta. Revisa dónde se te está cayendo el funnel: DMs, calificación o show-up.',
+    '⚠️ Vas a la mitad. Un buen vendedor no espera motivación, crea disciplina y la motivación llega sola.'
+  ],
+  low: [
+    '🚨 Vas por debajo del ritmo necesario. Prioriza prospección C.A.L.L. hoy mismo.',
+    '🚨 Ritmo bajo. Todo líder ha estado aquí — la diferencia la hace quien retoma la actividad hoy, no mañana.',
+    '🚨 Necesitas acelerar. El rechazo no te define, la inactividad sí. Vuelve a la prospección ahora.',
+    '🚨 Estás por debajo del ritmo. Recuerda por qué empezaste — esa razón vale más que el cansancio de hoy.'
+  ]
+};
+
+function messageFor(cumplimiento, seedKey){
+  let tier;
+  if(cumplimiento>=1) tier='top';
+  else if(cumplimiento>=0.7) tier='good';
+  else if(cumplimiento>=0.4) tier='mid';
+  else tier='low';
+  const text = seededPick((seedKey||'')+todayStr(), FRASES[tier]);
+  return {cls:tier==='top'?'top':tier, text};
+}
+
+function rutaHTML(ventas){
+  const vuelta = ventas===0 ? 1 : Math.ceil(ventas/12);
+  const pos = ventas===0 ? 0 : (ventas - (vuelta-1)*12);
+  let nodes='';
+  for(let i=1;i<=12;i++){
+    let cls='node';
+    if(i<pos) cls+=' done';
+    else if(i===pos) cls+=' done current';
+    nodes += `<div class="${cls}">${i===pos?'★':i}</div>`;
+  }
+  return `
+    ${vuelta>1?`<div class="stat-sub" style="margin-bottom:8px;">Vuelta ${vuelta} — ciclo actual</div>`:''}
+    <div class="ruta">${nodes}</div>
+  `;
+}
+
+function csvEscape(v){
+  const s = String(v);
+  if(/[",\n]/.test(s)) return '"'+s.replace(/"/g,'""')+'"';
+  return s;
+}
+function downloadCSV(content, filename){
+  const blob = new Blob(['\uFEFF'+content], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+async function exportTeamCSV(){
+  await loadSocios();
+  const header = [
+    'Socio','ID Mined','ID Patrocinador','Fecha','DMs Enviados','DMs Calificados','Llamadas Agendadas','Llamadas Realizadas','Ventas Cerradas',
+    'Contenido Publicado','Prospección C.A.L.L.',
+    ...FEED_ITEMS.map(it=>'Feed: '+it.label),
+    ...HISTORIAS_ITEMS.map(it=>'Historia: '+it.label),
+    'Notas'
+  ];
+  const rows = [header];
+  for(const s of state.socios){
+    const entries = await getEntries(s.id);
+    entries.forEach(e=>{
+      const r = e.redes||{};
+      rows.push([
+        s.name, s.minedId||'', s.sponsorId||'', e.date,
+        e.dms||0, e.dmsCalif||0, e.llamadasAg||0, e.llamadasReal||0, e.ventas||0,
+        e.contenido?'Si':'No', e.prospeccion?'Si':'No',
+        ...FEED_ITEMS.map(it=>r[it.key]?'Si':'No'),
+        ...HISTORIAS_ITEMS.map(it=>r['hist_'+it.key]?'Si':'No'),
+        (e.notas||'').replace(/\n/g,' ')
+      ]);
+    });
+  }
+  if(rows.length===1){ showToast('Todavía no hay registros para exportar'); return; }
+  const csv = rows.map(r=>r.map(csvEscape).join(',')).join('\r\n');
+  downloadCSV(csv, `equipo_mined_academy_${todayStr()}.csv`);
+  showToast('CSV descargado — impórtalo en Google Sheets ✓');
+}
+
+// ---------- RENDER: LANDING ----------
+function renderLanding(){
+  root.innerHTML = `
+    <div class="landing-hero">
+      <div class="eyebrow">Duplicación en equipo</div>
+      <h1>La Ruta — 12 Ventas al Mes</h1>
+      <p class="sub" style="max-width:480px;margin:8px auto 0;">Cada socio recorre su propia ruta. Tú ves el mapa completo del equipo.</p>
+    </div>
+    <div class="role-grid">
+      <div class="role-card" id="go-socio">
+        <span class="icon">🧭</span>
+        <h3>Soy socio</h3>
+        <p>Registra tu actividad diaria y sigue tu propia ruta hacia las 12 ventas del mes.</p>
+      </div>
+      <div class="role-card" id="go-admin">
+        <span class="icon">📡</span>
+        <h3>Panel del administrador</h3>
+        <p>Mide el crecimiento del equipo completo: ventas, ritmo semanal y ranking de socios.</p>
+      </div>
+    </div>
+    <div class="footer-note">Los datos se guardan en un almacenamiento compartido: todo socio y el administrador pueden ver la actividad registrada aquí.</div>
+  `;
+  document.getElementById('go-socio').onclick = ()=>{ state.view='socio-login'; render(); };
+  document.getElementById('go-admin').onclick = ()=>{ state.view='admin-login'; render(); };
+}
+
+// ---------- RENDER: SOCIO LOGIN ----------
+async function renderSocioLogin(){
+  await loadConfig();
+  await loadSocios();
+  const options = state.socios.map(s=>`<option value="${s.id}">${s.name} — ${s.minedId||'sin ID'}</option>`).join('');
+  root.innerHTML = `
+    <div class="back-link" id="back">← Volver</div>
+    <div class="card" style="max-width:440px;margin:30px auto;">
+      <span class="lock-icon">🔐</span>
+      <div class="eyebrow" style="text-align:center;">Ingreso de socio</div>
+      <h2 style="margin-bottom:16px;text-align:center;">Identifícate para entrar a tu ruta</h2>
+      ${state.socios.length? `
+        <div class="field" style="margin-bottom:14px;">
+          <label>Ya estoy registrado (autocompletar)</label>
+          <select id="existing"><option value="">Selecciona tu perfil…</option>${options}</select>
+        </div>
+      `:''}
+      <div class="field" style="margin-bottom:14px;">
+        <label>Nombre completo</label>
+        <input type="text" id="f-name" placeholder="Ej: Carla Muñoz">
+      </div>
+      <div class="grid grid-2" style="margin-bottom:14px;">
+        <div class="field">
+          <label>ID de Mined</label>
+          <input type="text" id="f-mined" placeholder="Ej: MA-2451">
+        </div>
+        <div class="field">
+          <label>ID de Patrocinador</label>
+          <input type="text" id="f-sponsor" placeholder="Ej: MA-1002">
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:6px;">
+        <label>Contraseña de socios</label>
+        <input type="password" id="f-pass" placeholder="••••••••">
+      </div>
+      <div id="err" class="stat-sub" style="color:var(--red);min-height:16px;"></div>
+      <button class="btn btn-gold" id="enter" style="width:100%;margin-top:10px;">Entrar a mi ruta</button>
+    </div>
+  `;
+  document.getElementById('back').onclick=()=>{state.view='landing';render();};
+  if(state.socios.length){
+    document.getElementById('existing').onchange = (e)=>{
+      const s = state.socios.find(x=>x.id===e.target.value);
+      if(s){
+        document.getElementById('f-name').value = s.name||'';
+        document.getElementById('f-mined').value = s.minedId||'';
+        document.getElementById('f-sponsor').value = s.sponsorId||'';
+      }
+    };
+  }
+  document.getElementById('enter').onclick=async ()=>{
+    const name = document.getElementById('f-name').value.trim();
+    const minedId = document.getElementById('f-mined').value.trim();
+    const sponsorId = document.getElementById('f-sponsor').value.trim();
+    const pass = document.getElementById('f-pass').value;
+    const err = document.getElementById('err');
+    if(!name || !minedId || !sponsorId){ err.textContent='Completa nombre, ID de Mined e ID de patrocinador.'; return; }
+    if(pass !== state.config.socioPassword){ err.textContent='Contraseña incorrecta.'; return; }
+    const id = slugify(minedId) || slugify(name);
+    const profile = {id, name, minedId, sponsorId};
+    await upsertProfile(profile);
+    state.socioProfile = profile;
+    state.socioName = name;
+    state.view='socio';
+    render();
+  };
+}
+
+// ---------- RENDER: ADMIN LOGIN ----------
+async function renderAdminLogin(){
+  await loadConfig();
+  root.innerHTML = `
+    <div class="back-link" id="back">← Volver</div>
+    <div class="card" style="max-width:380px;margin:30px auto;">
+      <span class="lock-icon">🔐</span>
+      <div class="eyebrow" style="text-align:center;">Acceso restringido</div>
+      <h2 style="margin-bottom:16px;text-align:center;">Panel del administrador</h2>
+      <div class="field" style="margin-bottom:6px;">
+        <label>Contraseña de administrador</label>
+        <input type="password" id="f-pass" placeholder="••••••••">
+      </div>
+      <div id="err" class="stat-sub" style="color:var(--red);min-height:16px;"></div>
+      <button class="btn btn-gold" id="enter" style="width:100%;margin-top:10px;">Entrar al panel</button>
+    </div>
+  `;
+  document.getElementById('back').onclick=()=>{state.view='landing';render();};
+  const tryEnter = async ()=>{
+    const pass = document.getElementById('f-pass').value;
+    if(pass !== state.config.adminPassword){ document.getElementById('err').textContent='Contraseña incorrecta.'; return; }
+    state.view='admin';
+    render();
+  };
+  document.getElementById('enter').onclick = tryEnter;
+  document.getElementById('f-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') tryEnter(); });
+}
+
+// ---------- RENDER: SOCIO DASHBOARD ----------
+async function renderSocio(){
+  if(!state.socioProfile){ state.view='socio-login'; render(); return; }
+  await loadConfig();
+  const profile = state.socioProfile;
+  const entries = await getEntries(profile.id);
+  const stats = computeStats(entries, state.config.metaMensual);
+  const msg = messageFor(stats.cumplimiento, profile.id);
+  const today = todayStr();
+  const todayEntry = entries.find(e=>e.date===today) || {date:today,dms:'',dmsCalif:'',llamadasAg:'',llamadasReal:'',ventas:'',contenido:false,prospeccion:false,notas:'',redes:{}};
+  const redes = todayEntry.redes || {};
+
+  root.innerHTML = `
+    <div class="header-row">
+      <div>
+        <div class="name-badge"><span class="dot"></span>${state.socioName}</div>
+        <div class="id-line"><span>ID Mined: ${profile.minedId||'—'}</span><span>Patrocinador: ${profile.sponsorId||'—'}</span></div>
+        <h1 style="margin-top:10px;">Tu ruta este mes</h1>
+        <p class="sub">Meta: ${stats.meta} ventas/mes</p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" id="switch">Cambiar de socio</button>
+        <button class="btn btn-ghost btn-sm" id="home">Inicio</button>
+      </div>
+    </div>
+
+    <div class="msg-banner ${msg.cls}">${msg.text}</div>
+
+    <div class="card">
+      ${rutaHTML(stats.ventas)}
+      <div class="stat-sub" style="text-align:center;margin-top:6px;">${stats.ventas} de ${stats.meta} ventas — ${fmtPct(stats.cumplimiento)} cumplido</div>
+    </div>
+
+    <div class="grid grid-4 section-gap">
+      <div class="stat"><div class="stat-label">Ventas del mes</div><div class="stat-value gold">${stats.ventas}</div></div>
+      <div class="stat"><div class="stat-label">Tasa de cierre</div><div class="stat-value">${fmtPct(stats.tasaCierre)}</div></div>
+      <div class="stat"><div class="stat-label">DMs calificados</div><div class="stat-value">${stats.dmsCalif}</div></div>
+      <div class="stat"><div class="stat-label">Show-up rate</div><div class="stat-value">${fmtPct(stats.showUp)}</div></div>
+    </div>
+    <div class="stat section-gap">
+      <div class="stat-label">Piezas de contenido este mes</div>
+      <div class="stat-value gold">${stats.redesCount}</div>
+      <div class="stat-sub">Videos de feed + historias marcados en tu registro diario</div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="eyebrow">Registro de hoy</div>
+      <h2 style="margin-bottom:16px;">${today}</h2>
+      <div class="grid grid-4">
+        <div class="field"><label>DMs enviados</label><input type="number" min="0" id="f-dms" value="${todayEntry.dms}"></div>
+        <div class="field"><label>DMs calificados</label><input type="number" min="0" id="f-dmscalif" value="${todayEntry.dmsCalif}"></div>
+        <div class="field"><label>Llamadas agendadas</label><input type="number" min="0" id="f-llamadasag" value="${todayEntry.llamadasAg}"></div>
+        <div class="field"><label>Llamadas realizadas</label><input type="number" min="0" id="f-llamadasreal" value="${todayEntry.llamadasReal}"></div>
+      </div>
+      <div class="grid grid-2 section-gap">
+        <div class="field"><label>Ventas cerradas</label><input type="number" min="0" id="f-ventas" value="${todayEntry.ventas}"></div>
+        <div class="field">
+          <label>Contenido publicado</label>
+          <div class="toggle-row">
+            <div class="toggle ${todayEntry.contenido?'active':''}" data-t="contenido" data-v="true">Sí</div>
+            <div class="toggle ${!todayEntry.contenido?'active':''}" data-t="contenido" data-v="false">No</div>
+          </div>
+        </div>
+      </div>
+      <div class="field section-gap">
+        <div class="label-row">
+          <label>Prospección C.A.L.L. realizada</label>
+          <span class="info-badge" title="Metodología C.A.L.L.: Conectar (abrir conversación genuina con el prospecto) → Activar curiosidad (mostrar tu mundo/resultados sin vender) → Levantar la mano (el prospecto muestra interés real, calificando de forma indirecta) → Llamada (agendar la conversación de cierre). Marca Sí si hoy avanzaste al menos un prospecto por esta secuencia.">i</span>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle ${todayEntry.prospeccion?'active':''}" data-t="prospeccion" data-v="true">Sí</div>
+          <div class="toggle ${!todayEntry.prospeccion?'active':''}" data-t="prospeccion" data-v="false">No</div>
+        </div>
+      </div>
+      <div class="field section-gap">
+        <label>Notas</label>
+        <textarea id="f-notas" placeholder="Objeciones, aprendizajes, ideas...">${todayEntry.notas||''}</textarea>
+      </div>
+      <button class="btn btn-gold" id="save" style="margin-top:18px;">Guardar registro de hoy</button>
+    </div>
+
+    <div class="card section-gap">
+      <div class="eyebrow">Redes sociales</div>
+      <h2 style="margin-bottom:16px;">Contenido de hoy</h2>
+
+      <div class="chip-block">
+        <div class="chip-block-title">Video del feed</div>
+        <div class="chip-block-sub">Marca qué tipo de video publicaste hoy</div>
+        <div class="chip-grid">
+          ${FEED_ITEMS.map(it=>`<div class="chip ${redes[it.key]?'active':''}" data-group="feed" data-key="${it.key}" title="${it.hint}">${it.label}</div>`).join('')}
+        </div>
+      </div>
+
+      <div class="chip-block" style="margin-bottom:0;">
+        <div class="chip-block-title">Historias de Instagram</div>
+        <div class="chip-block-sub">Marca qué tipo de historia subiste hoy</div>
+        <div class="chip-grid">
+          ${HISTORIAS_ITEMS.map(it=>`<div class="chip ${redes['hist_'+it.key]?'active':''}" data-group="hist" data-key="hist_${it.key}">${it.label}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="eyebrow">Historial de redes sociales</div>
+      <h2 style="margin-bottom:12px;">Últimos días registrados</h2>
+      <div id="redes-log">${redesLogHTML(entries)}</div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="eyebrow">Este mes</div>
+      <h2 style="margin-bottom:14px;">DMs enviados: ${stats.dms} · Llamadas agendadas: ${stats.llamadasAg}</h2>
+      <table>
+        <thead><tr><th>Fecha</th><th>DMs</th><th>Calif.</th><th>Llam. Ag.</th><th>Llam. Real.</th><th>Ventas</th></tr></thead>
+        <tbody>
+        ${entries.slice(-10).reverse().map(e=>`
+          <tr><td>${e.date}</td><td>${e.dms||0}</td><td>${e.dmsCalif||0}</td><td>${e.llamadasAg||0}</td><td>${e.llamadasReal||0}</td><td>${e.ventas||0}</td></tr>
+        `).join('') || '<tr><td colspan="6" class="sub">Aún no hay registros.</td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  let toggleState = {contenido: !!todayEntry.contenido, prospeccion: !!todayEntry.prospeccion};
+  document.querySelectorAll('.toggle').forEach(t=>{
+    t.onclick = ()=>{
+      const type = t.dataset.t, val = t.dataset.v==='true';
+      toggleState[type]=val;
+      document.querySelectorAll(`.toggle[data-t="${type}"]`).forEach(x=>x.classList.toggle('active', x.dataset.v===String(val)));
+    };
+  });
+
+  let redesState = {...redes};
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.onclick = ()=>{
+      const key = c.dataset.key;
+      redesState[key] = !redesState[key];
+      c.classList.toggle('active', !!redesState[key]);
+    };
+  });
+
+  document.getElementById('home').onclick=()=>{state.view='landing';render();};
+  document.getElementById('switch').onclick=()=>{state.socioProfile=null;state.view='socio-login';render();};
+  document.getElementById('save').onclick=async ()=>{
+    const entry = {
+      date: today,
+      dms: Number(document.getElementById('f-dms').value)||0,
+      dmsCalif: Number(document.getElementById('f-dmscalif').value)||0,
+      llamadasAg: Number(document.getElementById('f-llamadasag').value)||0,
+      llamadasReal: Number(document.getElementById('f-llamadasreal').value)||0,
+      ventas: Number(document.getElementById('f-ventas').value)||0,
+      contenido: toggleState.contenido,
+      prospeccion: toggleState.prospeccion,
+      notas: document.getElementById('f-notas').value,
+      redes: redesState
+    };
+    await saveEntry(profile.id, entry);
+    showToast('Registro guardado ✓');
+    renderSocio();
+  };
+}
+
+// ---------- RENDER: ADMIN ----------
+async function renderAdmin(){
+  root.innerHTML = `<div class="back-link" id="back">← Volver</div><div class="card"><p class="sub">Cargando datos del equipo…</p></div>`;
+  document.getElementById('back').onclick=()=>{state.view='landing';render();};
+
+  await loadConfig();
+  await loadSocios();
+  const mk = monthKey(todayStr());
+  const rows = [];
+  let allEntries = [];
+  for(const s of state.socios){
+    const entries = await getEntries(s.id);
+    const stats = computeStats(entries, state.config.metaMensual);
+    const lastDate = entries.length? entries[entries.length-1].date : null;
+    rows.push({name:s.name, minedId:s.minedId, ...stats, lastDate});
+    allEntries = allEntries.concat(entries.map(e=>({...e, socio:s.id})));
+  }
+  rows.sort((a,b)=>b.ventas-a.ventas);
+
+  const numSocios = state.socios.length;
+  const teamVentas = sum(rows,'ventas');
+  const teamMeta = state.config.metaMensual * (numSocios||1);
+  const teamCumplimiento = teamMeta>0 ? teamVentas/teamMeta : 0;
+  const activos = rows.filter(r=>r.ventas>0 || r.dms>0).length;
+  const promedio = numSocios>0 ? (teamVentas/numSocios) : 0;
+
+  // weekly trend (all socios combined), last 8 weeks by Monday
+  const weekMap = {};
+  monthEntries(allEntries, mk).forEach(()=>{}); // noop safety
+  allEntries.forEach(e=>{
+    const wk = getMonday(e.date);
+    weekMap[wk] = (weekMap[wk]||0) + (Number(e.ventas)||0);
+  });
+  const weeks = Object.keys(weekMap).sort().slice(-8);
+  const maxWeek = Math.max(1, ...weeks.map(w=>weekMap[w]));
+
+  root.innerHTML = `
+    <div class="header-row">
+      <div>
+        <div class="eyebrow">Panel del administrador</div>
+        <h1>Mapa del equipo</h1>
+        <p class="sub">${numSocios} socio${numSocios===1?'':'s'} registrado${numSocios===1?'':'s'} · Meta individual: ${state.config.metaMensual} ventas/mes</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
+        <button class="btn btn-gold btn-sm" id="export-csv">⇩ Exportar a Google Sheets</button>
+        <button class="btn btn-ghost btn-sm" id="edit-meta">Editar meta individual</button>
+        <button class="btn btn-ghost btn-sm" id="edit-socio-pass">Contraseña socios</button>
+        <button class="btn btn-ghost btn-sm" id="edit-admin-pass">Contraseña admin</button>
+        <button class="btn btn-ghost btn-sm" id="home">Inicio</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stat-label" style="margin-bottom:8px;">Progreso del equipo hacia la meta mensual</div>
+      <div class="route-bar-wrap">
+        <div class="route-bar"><div class="route-bar-fill" style="width:${Math.min(100,teamCumplimiento*100)}%;"></div></div>
+      </div>
+      <div class="stat-sub" style="margin-top:8px;">${teamVentas} de ${teamMeta} ventas del equipo — ${fmtPct(teamCumplimiento)}</div>
+    </div>
+
+    <div class="grid grid-4 section-gap">
+      <div class="stat"><div class="stat-label">Ventas del equipo</div><div class="stat-value gold">${teamVentas}</div></div>
+      <div class="stat"><div class="stat-label">Meta del equipo</div><div class="stat-value">${teamMeta}</div></div>
+      <div class="stat"><div class="stat-label">Promedio por socio</div><div class="stat-value">${promedio.toFixed(1)}</div></div>
+      <div class="stat"><div class="stat-label">Socios activos</div><div class="stat-value green">${activos}/${numSocios}</div></div>
+    </div>
+
+    <div class="stat section-gap">
+      <div class="stat-label">Piezas de contenido del equipo (mes)</div>
+      <div class="stat-value gold">${sum(rows,'redesCount')}</div>
+      <div class="stat-sub">Videos de feed + historias de todos los socios</div>
+    </div>
+
+    <div class="card section-gap">
+      <div class="eyebrow">Ritmo semanal del equipo</div>
+      <h2 style="margin-bottom:4px;">Ventas cerradas por semana</h2>
+      ${weeks.length ? `
+        <div class="bars">
+          ${weeks.map(w=>`
+            <div class="bar-col">
+              <div class="bar" style="height:${Math.max(4,(weekMap[w]/maxWeek)*100)}%;"></div>
+              <div class="bar-lbl">${weekMap[w]}<br>${w.slice(5)}</div>
+            </div>
+          `).join('')}
+        </div>
+      `: `<p class="sub">Todavía no hay registros del equipo.</p>`}
+    </div>
+
+    <div class="card section-gap">
+      <div class="eyebrow">Ranking del equipo</div>
+      <h2 style="margin-bottom:14px;">Este mes</h2>
+      <table>
+        <thead><tr><th>#</th><th>Socio</th><th>ID Mined</th><th>Ventas</th><th>% Meta</th><th>Cierre</th><th>Show-up</th><th>Redes (mes)</th><th>Último registro</th></tr></thead>
+        <tbody>
+        ${rows.map((r,i)=>`
+          <tr>
+            <td class="rank">${i+1}</td>
+            <td>${r.name}</td>
+            <td>${r.minedId||'—'}</td>
+            <td>${r.ventas}</td>
+            <td>${fmtPct(r.cumplimiento)}</td>
+            <td>${fmtPct(r.tasaCierre)}</td>
+            <td>${fmtPct(r.showUp)}</td>
+            <td>${r.redesCount}</td>
+            <td><span class="pill ${r.lastDate===todayStr()?'on':'off'}">${r.lastDate||'—'}</span></td>
+          </tr>
+        `).join('') || `<tr><td colspan="9" class="sub">Ningún socio ha registrado actividad todavía.</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer-note">Meta usada para el cálculo del equipo: ${state.config.metaMensual} ventas/mes por socio × ${numSocios||0} socios.<br>Exporta el CSV y en Google Sheets usa Archivo → Importar → Subir, o arrástralo directo a Google Drive para abrirlo como hoja de cálculo.</div>
+  `;
+
+  document.getElementById('back').onclick=()=>{state.view='landing';render();};
+  document.getElementById('home').onclick=()=>{state.view='landing';render();};
+  document.getElementById('export-csv').onclick=exportTeamCSV;
+  document.getElementById('edit-meta').onclick=async ()=>{
+    const val = prompt('Meta mensual de ventas por socio:', state.config.metaMensual);
+    if(val===null) return;
+    const n = Number(val);
+    if(!n || n<=0){ showToast('Ingresa un número válido'); return; }
+    state.config.metaMensual = n;
+    await storeSet('config', state.config, true);
+    showToast('Meta actualizada ✓');
+    renderAdmin();
+  };
+  document.getElementById('edit-socio-pass').onclick=async ()=>{
+    const val = prompt('Nueva contraseña para el ingreso de socios:', state.config.socioPassword);
+    if(val===null || !val.trim()) return;
+    state.config.socioPassword = val.trim();
+    await storeSet('config', state.config, true);
+    showToast('Contraseña de socios actualizada ✓');
+  };
+  document.getElementById('edit-admin-pass').onclick=async ()=>{
+    const val = prompt('Nueva contraseña para el panel de administrador:', state.config.adminPassword);
+    if(val===null || !val.trim()) return;
+    state.config.adminPassword = val.trim();
+    await storeSet('config', state.config, true);
+    showToast('Contraseña de administrador actualizada ✓');
+  };
+}
+
+function render(){
+  if(state.view==='landing') renderLanding();
+  else if(state.view==='socio-login') renderSocioLogin();
+  else if(state.view==='socio') renderSocio();
+  else if(state.view==='admin-login') renderAdminLogin();
+  else if(state.view==='admin') renderAdmin();
+}
+
+render();
+</script>
+</body>
+</html>
