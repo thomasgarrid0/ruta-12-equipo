@@ -1,4 +1,3 @@
-<!-- test auto-deploy -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -246,14 +245,22 @@ function showToast(msg){
   setTimeout(()=>toastEl.classList.remove('show'), 1600);
 }
 
-async function storeGet(key, shared){
+async function storeGet(key){
   try{
-    const r = await window.storage.get(key, !!shared);
-    return r ? JSON.parse(r.value) : null;
+    const r = await fetch('/api/store?key='+encodeURIComponent(key));
+    if(r.status===404) return null;
+    const text = await r.text();
+    return text ? JSON.parse(text) : null;
   }catch(e){ return null; }
 }
-async function storeSet(key, value, shared){
-  try{ await window.storage.set(key, JSON.stringify(value), !!shared); }catch(e){ console.error('storage error', e); }
+async function storeSet(key, value){
+  try{
+    await fetch('/api/store', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({key, value: JSON.stringify(value)})
+    });
+  }catch(e){ console.error('storage error', e); }
 }
 
 async function loadConfig(){
